@@ -20,7 +20,6 @@ def period_model(d, l):
     return 2.0 * np.pi * np.sqrt((l**2.0 / 12.0 + d**2.0) / (g * d))
 
 data = data.div(properties["n_measurements"].to_numpy(), axis=1)
-<<<<<<< HEAD
 properties["measured_period"] = data.mean(axis=0).to_numpy()
 properties["error"] = np.array(data.std(axis=0) / np.sqrt(data != np.nan).sum(axis=0).to_numpy())
 # error = [max(e, 0.01) for e in error]
@@ -39,19 +38,3 @@ merged_data["expected_period"] = period_model(merged_data["d"].to_numpy(), stick
 merged_data["sigma"] = np.abs(merged_data["expected_period"] - merged_data["measured_period"]) / merged_data["error"]
 
 print(merged_data)
-=======
-measured_times = data.mean(axis=0).to_numpy()
-error = np.array(data.std(axis=0) / np.sqrt(data != np.nan).sum(axis=0).to_numpy())
-error = [max(e, 0.01) for e in error]
-
-properties["d"] = np.absolute(properties["hole_distance"].to_numpy() - stick_lenght/2)
-expected_time = 2*math.pi * np.sqrt((stick_lenght**2.0 / 12.0 + properties["d"].to_numpy()**2) / (g * properties["d"].to_numpy()))
-
-print(data)
-
-print("\n\n\n")
-print("Expected Time: ", *(f"{x:.4f}" for x in expected_time))
-print("Measured Times: ", *(f"{x:.4f}" for x in measured_times))
-print("Error: ", *(f"{x:.4f}" for x in error))
-print("Actual Sigmas: ", *(f"{np.abs(x - y)/e:.4f}" for x, y, e in zip(expected_time, measured_times, error)))
->>>>>>> 124ecc70b604d4ef8f5499793b8ac1974976d40f
