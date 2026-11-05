@@ -28,6 +28,6 @@ properties["d"] = np.absolute(properties["hole_distance"].to_numpy() - stick_len
 expected_time = 2*math.pi * np.sqrt((stick_lenght**2.0 / 12.0 + properties["d"].to_numpy()**2.0) / (g * properties["d"].to_numpy()))
 print(data)
 
-print("Expected Time: ", * expected_time)
-print("Measured Times: ", * measured_times)
-print("Error: ", * error)
+print("Expected Time: ", *(f"{x:.4f}" for x in expected_time))
+print("Measured Times: ", *(f"{x:.4f}" for x in measured_times))
+print("Error: ", *(f"{x:.4f}" for x in error))
