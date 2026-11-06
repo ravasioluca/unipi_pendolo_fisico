@@ -75,19 +75,30 @@ plt.show()
 
 plt.errorbar(merged_data["hole_distance"], merged_data["measured_period"] - merged_data["expected_period"], yerr=merged_data["error"], fmt=".", label="Misurazioni con errore")
 
+concatenated = np.array([])
 linspace = np.linspace(0, 0.4, 1000)
 expected_T_error = np.sqrt(diff_T_diff_d(np.abs(linspace - stick_lenght/2), stick_lenght)**2 * stick_measurement_error**2 + diff_T_diff_l(np.abs(linspace - stick_lenght/2), stick_lenght)**2 * stick_measurement_error**2)
+concatenated = np.concatenate([concatenated, expected_T_error])
 
 plt.plot(linspace, expected_T_error, color="orange", linestyle="--")
 plt.plot(linspace, -expected_T_error, color="orange", linestyle="--")
+concatenated = np.concatenate([concatenated, np.zeros(1000) + max(expected_T_error)])
 
 linspace = np.linspace(0.6, 1, 1000)
 expected_T_error = np.sqrt(diff_T_diff_d(np.abs(linspace - stick_lenght/2), stick_lenght)**2 * stick_measurement_error**2 + diff_T_diff_l(np.abs(linspace - stick_lenght/2), stick_lenght)**2 * stick_measurement_error**2)
+concatenated = np.concatenate([concatenated, expected_T_error])
 
 plt.plot(linspace, expected_T_error, color="orange", linestyle="--")
 plt.plot(linspace, -expected_T_error, color="orange", linestyle="--")
 plt.margins(0)
 
+plt.fill_between(
+    np.concatenate([np.linspace(0, 0.4, 1000), np.linspace(0.4, 0.6, 1000), np.linspace(0.6, 1, 1000)]),
+    concatenated,
+    -concatenated,
+    color="orange",
+    alpha=0.1,
+)
 
 plt.show()
 
@@ -95,17 +106,35 @@ plt.show()
 
 plt.errorbar(merged_data["hole_distance"], (merged_data["measured_period"] - merged_data["expected_period"]) / merged_data["expected_period"] * 100, yerr=merged_data["error"] / merged_data["expected_period"] * 100, fmt=".", label="Misurazioni con errore")
 
-linspace = np.linspace(0, 0.4, 1000)
+concatenated = np.array([])
+
+linspace = np.linspace(0, 0.35, 1000)
 expected_T_error_percentual = np.sqrt(diff_T_diff_d(np.abs(linspace - stick_lenght/2), stick_lenght)**2 * stick_measurement_error**2 + diff_T_diff_l(np.abs(linspace - stick_lenght/2), stick_lenght)**2 * stick_measurement_error**2) / period_model(np.abs(linspace - stick_lenght/2), stick_lenght) * 100
+concatenated = np.concatenate([concatenated, expected_T_error_percentual])
 
 plt.plot(linspace, expected_T_error_percentual, color="orange", linestyle="--")
 plt.plot(linspace, -expected_T_error_percentual, color="orange", linestyle="--")
 
-linspace = np.linspace(0.6, 1, 1000)
-expected_T_error_percentual = np.sqrt(diff_T_diff_d(np.abs(linspace - stick_lenght/2), stick_lenght)**2 * stick_measurement_error**2 + diff_T_diff_l(np.abs(linspace - stick_lenght/2), stick_lenght)**2 * stick_measurement_error**2) / period_model(np.abs(linspace - stick_lenght/2), stick_lenght) * 100
+concatenated = np.concatenate([concatenated, np.zeros(1000) + max(expected_T_error_percentual)])
 
+linspace = np.linspace(0.65, 1, 1000)
+expected_T_error_percentual = np.sqrt(diff_T_diff_d(np.abs(linspace - stick_lenght/2), stick_lenght)**2 * stick_measurement_error**2 + diff_T_diff_l(np.abs(linspace - stick_lenght/2), stick_lenght)**2 * stick_measurement_error**2) / period_model(np.abs(linspace - stick_lenght/2), stick_lenght) * 100
+concatenated = np.concatenate([concatenated, expected_T_error_percentual])
 plt.plot(linspace, expected_T_error_percentual, color="orange", linestyle="--")
 plt.plot(linspace, -expected_T_error_percentual, color="orange", linestyle="--")
+
+plt.fill_between(
+    np.concatenate([np.linspace(0, 0.35, 1000), np.linspace(0.35, 0.65, 1000), np.linspace(0.65, 1, 1000)]),
+    concatenated,
+    -concatenated,
+    color="orange",
+    alpha=0.1,
+)
+
+merged_data["error_percentual"] = merged_data["error"] / merged_data["expected_period"] * 100
+
+weighted_mean = lambda x: np.average(x, weights= 1/merged_data.loc[x.index]["error_percentual"].to_numpy()**2)
+plt.axhline(y=weighted_mean((merged_data["measured_period"] - merged_data["expected_period"]) / merged_data["expected_period"] * 100), color="green", linestyle="--", label="Residui nulli")
 plt.margins(0)
 
 
