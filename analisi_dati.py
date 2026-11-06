@@ -14,6 +14,8 @@ import scipy as sp
 data = pd.read_csv("allegati/misurazioni.csv")
 properties = pd.read_csv("allegati/properties.csv")
 stick_lenght = 1.00 # meters
+stick_width = 0.0215 # meters (controlla che sia giusto)
+hole_diameter = 0.004 # meters (controlla che sia giusto)
 stick_measurement_error = 0.005 # meters
 g = 9.8052 # Recuperato da bgi.obs-mip.fr - Bureau Gravimétrique International
 
@@ -140,3 +142,28 @@ plt.margins(0)
 
 plt.show()
 
+# CONFRONTO MODELLI TEORICI ALTERNATIVI (errore percentuale)
+
+def period_model_v2(d, l):
+    return 2.0 * np.pi * np.sqrt(((l**2.0 + stick_width**2.0) / 12.0 + d**2.0) / (g * d))
+
+offset = (stick_lenght * stick_width * stick_lenght /2 - 4 * np.pi * (hole_diameter/2)**2 * sum(properties["hole_distance"].unique()))/(stick_lenght * stick_width - 4 * np.pi * (hole_diameter/2)**2 * len(properties["hole_distance"].unique()))
+def period_model_v3(d, l):
+    return 2.0 * np.pi * np.sqrt((l**2.0 / 12.0 + (d)**2.0) / (g * d))
+
+def period_model_v4(d, l):
+    return (2.0 * np.pi * np.sqrt((l**2.0 / 12.0 + (d)**2.0) / (g * d)))*(1 + 1/16 * 0.03)
+
+linspace = np.linspace(0, 0.45, 5000)
+plt.plot(linspace, (period_model_v2(np.abs(linspace - stick_lenght/2), stick_lenght) - period_model(np.abs(linspace - stick_lenght/2), stick_lenght))/period_model(np.abs(linspace - stick_lenght/2), stick_lenght) * 100, label="Modello teorico v1", color="orange")
+plt.plot(linspace, (period_model_v3(np.abs(linspace - offset), stick_lenght) - period_model(np.abs(linspace - stick_lenght/2), stick_lenght))/period_model(np.abs(linspace - stick_lenght/2), stick_lenght) * 100, label="Modello teorico v2", color="green")
+plt.plot(linspace, (period_model_v4(np.abs(linspace - offset), stick_lenght) - period_model(np.abs(linspace - stick_lenght/2), stick_lenght))/period_model(np.abs(linspace - stick_lenght/2), stick_lenght) * 100, label="Modello teorico v3", color="blue")
+
+linspace = np.linspace(0.55, 1, 5000)
+plt.plot(linspace, (period_model_v2(np.abs(linspace - stick_lenght/2), stick_lenght) - period_model(np.abs(linspace - stick_lenght/2), stick_lenght))/period_model(np.abs(linspace - stick_lenght/2), stick_lenght) * 100, label="Modello teorico v1", color="orange")
+plt.plot(linspace, (period_model_v3(np.abs(linspace - offset), stick_lenght) - period_model(np.abs(linspace - stick_lenght/2), stick_lenght))/period_model(np.abs(linspace - stick_lenght/2), stick_lenght) * 100, label="Modello teorico v2", color="green")
+plt.plot(linspace, (period_model_v4(np.abs(linspace - offset), stick_lenght) - period_model(np.abs(linspace - stick_lenght/2), stick_lenght))/period_model(np.abs(linspace - stick_lenght/2), stick_lenght) * 100, label="Modello teorico v3", color="blue")
+
+plt.show()
+
+print(offset - stick_lenght/2)
