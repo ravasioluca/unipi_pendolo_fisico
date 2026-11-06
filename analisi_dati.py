@@ -20,10 +20,17 @@ g = 9.8052 # Recuperato da bgi.obs-mip.fr - Bureau Gravimétrique International
 def period_model(d, l):
     return 2.0 * np.pi * np.sqrt((l**2.0 / 12.0 + d**2.0) / (g * d))
 
+def diff_T_diff_d(d, l):
+    return (np.pi * (d**2 - l**2 / 12))/(np.sqrt(g * d) * np.sqrt(l**2.0 / 12.0 + d**2.0) * d)
+
+def diff_T_diff_l(d, l):
+    return (np.pi * l)/(6 * np.sqrt(g * d) * np.sqrt(l**2.0 / 12.0 + d**2.0))
+
 ### PRENDIAMO I DATI
 data = data.div(properties["n_measurements"].to_numpy(), axis=1)
 properties["measured_period"] = data.mean(axis=0).to_numpy()
 properties["error"] = np.array(data.std(axis=0) / np.sqrt(data != np.nan).sum(axis=0).to_numpy())
+properties["error"] = np.maximum(properties["error"], 0.01/np.sqrt(3)/properties["n_measurements"])
 # error = [max(e, 0.01) for e in error]
 
 weighted_mean = lambda x: np.average(x, weights= 1/properties.loc[x.index]["error"].to_numpy()**2)
@@ -68,7 +75,18 @@ plt.show()
 
 plt.errorbar(merged_data["hole_distance"], merged_data["measured_period"] - merged_data["expected_period"], yerr=merged_data["error"], fmt=".", label="Misurazioni con errore")
 
-plt.axhline(y=-0.004, color="orange", linestyle="--", label="Modello teorico")
-plt.axhline(y=0.004, color="orange", linestyle="--", label="Modello teorico")
+linspace = np.linspace(0, 0.4, 1000)
+expected_T_error = np.sqrt(diff_T_diff_d(np.abs(linspace - stick_lenght/2), stick_lenght)**2 * stick_measurement_error**2 + diff_T_diff_l(np.abs(linspace - stick_lenght/2), stick_lenght)**2 * stick_measurement_error**2)
+
+plt.plot(linspace, expected_T_error, color="orange", linestyle="--")
+plt.plot(linspace, -expected_T_error, color="orange", linestyle="--")
+
+linspace = np.linspace(0.6, 1, 1000)
+expected_T_error = np.sqrt(diff_T_diff_d(np.abs(linspace - stick_lenght/2), stick_lenght)**2 * stick_measurement_error**2 + diff_T_diff_l(np.abs(linspace - stick_lenght/2), stick_lenght)**2 * stick_measurement_error**2)
+
+plt.plot(linspace, expected_T_error, color="orange", linestyle="--")
+plt.plot(linspace, -expected_T_error, color="orange", linestyle="--")
+plt.margins(0)
+
 
 plt.show()
