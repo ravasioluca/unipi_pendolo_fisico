@@ -90,3 +90,24 @@ plt.margins(0)
 
 
 plt.show()
+
+### PLOT DEI RESIDUI PERCENTUALI
+
+plt.errorbar(merged_data["hole_distance"], (merged_data["measured_period"] - merged_data["expected_period"]) / merged_data["expected_period"] * 100, yerr=merged_data["error"] / merged_data["expected_period"] * 100, fmt=".", label="Misurazioni con errore")
+
+linspace = np.linspace(0, 0.4, 1000)
+expected_T_error_percentual = np.sqrt(diff_T_diff_d(np.abs(linspace - stick_lenght/2), stick_lenght)**2 * stick_measurement_error**2 + diff_T_diff_l(np.abs(linspace - stick_lenght/2), stick_lenght)**2 * stick_measurement_error**2) / period_model(np.abs(linspace - stick_lenght/2), stick_lenght) * 100
+
+plt.plot(linspace, expected_T_error_percentual, color="orange", linestyle="--")
+plt.plot(linspace, -expected_T_error_percentual, color="orange", linestyle="--")
+
+linspace = np.linspace(0.6, 1, 1000)
+expected_T_error_percentual = np.sqrt(diff_T_diff_d(np.abs(linspace - stick_lenght/2), stick_lenght)**2 * stick_measurement_error**2 + diff_T_diff_l(np.abs(linspace - stick_lenght/2), stick_lenght)**2 * stick_measurement_error**2) / period_model(np.abs(linspace - stick_lenght/2), stick_lenght) * 100
+
+plt.plot(linspace, expected_T_error_percentual, color="orange", linestyle="--")
+plt.plot(linspace, -expected_T_error_percentual, color="orange", linestyle="--")
+plt.margins(0)
+
+
+plt.show()
+
