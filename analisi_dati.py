@@ -12,10 +12,13 @@ import math
 import scipy as sp
 
 plt.rcParams.update({
-    "font.size": 12,
-    "axes.titlesize": 18,
-    "axes.labelsize": 16,
-    "legend.fontsize": 11,
+    "text.usetex": True,  # Attiva l'uso di LaTeX per i testi
+    "font.family": "serif",  # Consigliato con LaTeX (es. Computer Modern)
+    "font.size": 16,
+    "axes.titlesize": 22,
+    "axes.labelsize": 20,
+    "legend.fontsize": 18,  # Aumentato per renderla più grande
+    "legend.title_fontsize": 20,  # (Opzionale) Se usi un titolo nella legenda
 })
 
 
@@ -153,11 +156,11 @@ plt.fill_between(
 merged_data["error_percentual"] = merged_data["error"] / merged_data["expected_period"] * 100
 
 weighted_mean = lambda x: np.average(x, weights= 1/merged_data.loc[x.index]["error_percentual"].to_numpy()**2)
-plt.axhline(y=weighted_mean((merged_data["measured_period"] - merged_data["expected_period"]) / merged_data["expected_period"] * 100), color="green", linestyle="--", label="Residui nulli")
+plt.axhline(y=weighted_mean((merged_data["measured_period"] - merged_data["expected_period"]) / merged_data["expected_period"] * 100), color="green", linestyle="--", label="Scostamento percentuale medio")
 plt.margins(0)
 
 plt.xlabel("Distanza del foro dall'estremo (m)")
-plt.ylabel("Residuo percentuale (%)")
+plt.ylabel(r"Residuo percentuale (\%)")
 plt.title("Residui percentuali")
 plt.legend(loc="lower right")
 plt.show()
@@ -185,7 +188,7 @@ plt.plot(linspace, (period_model_v2(np.abs(linspace - stick_lenght/2), stick_len
 plt.plot(linspace, (period_model_v3(np.abs(linspace - offset), stick_lenght) - period_model(np.abs(linspace - stick_lenght/2), stick_lenght))/period_model(np.abs(linspace - stick_lenght/2), stick_lenght) * 100, label="_nolegend_", color="green")
 plt.plot(linspace, (period_model_v4(np.abs(linspace - offset), stick_lenght) - period_model(np.abs(linspace - stick_lenght/2), stick_lenght))/period_model(np.abs(linspace - stick_lenght/2), stick_lenght) * 100, label="_nolegend_", color="blue")
 plt.xlabel("Distanza del foro dall'estremo (m)")
-plt.ylabel("Residuo percentuale rispetto al base (%)")
+plt.ylabel(r"Residuo percentuale rispetto al base (\%)")
 plt.title("Confronto tra modelli teorici")
 plt.legend(loc="best")
 plt.show()
