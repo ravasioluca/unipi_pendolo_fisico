@@ -116,11 +116,12 @@ plt.fill_between(
     -concatenated,
     color="orange",
     alpha=0.1,
+    label="Incertezza sul valore atteso"
 )
 plt.xlabel("Distanza del foro dall'estremo (m)")
 plt.ylabel("Residuo: misurato − atteso (s)")
 plt.title("Residui assoluti")
-plt.legend(loc="lower right")
+plt.legend(loc="upper left")
 plt.show()
 plt.close()
 
@@ -151,6 +152,7 @@ plt.fill_between(
     -concatenated,
     color="orange",
     alpha=0.1,
+    label="Incertezza sul valore atteso"
 )
 
 merged_data["error_percentual"] = merged_data["error"] / merged_data["expected_period"] * 100
@@ -162,7 +164,7 @@ plt.margins(0)
 plt.xlabel("Distanza del foro dall'estremo (m)")
 plt.ylabel(r"Residuo percentuale (\%)")
 plt.title("Residui percentuali")
-plt.legend(loc="lower right")
+plt.legend(loc="upper left")
 plt.show()
 plt.close()
 
