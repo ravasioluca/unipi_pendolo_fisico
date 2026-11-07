@@ -11,6 +11,14 @@ import matplotlib.pyplot as plt
 import math
 import scipy as sp
 
+plt.rcParams.update({
+    "font.size": 12,
+    "axes.titlesize": 18,
+    "axes.labelsize": 16,
+    "legend.fontsize": 11,
+})
+
+
 data = pd.read_csv("allegati/misurazioni.csv")
 properties = pd.read_csv("allegati/properties.csv")
 stick_lenght = 1.00 # meters
@@ -63,16 +71,20 @@ print(merged_data)
 plt.plot(merged_data["hole_distance"], merged_data["measured_period"], "o", label="Misurazioni")
 
 spazio_lineare = np.linspace(0, 0.485, 1000)
-plt.plot(spazio_lineare, period_model(np.abs(spazio_lineare - stick_lenght/2), stick_lenght), label="Modello teorico", color="orange")
+plt.plot(spazio_lineare, period_model(np.abs(spazio_lineare - stick_lenght/2), stick_lenght), label="_nolegend_", color="orange")
 
 
 spazio_lineare = np.linspace(0.515, 1, 1000)
 plt.plot(spazio_lineare, period_model(np.abs(spazio_lineare - stick_lenght/2), stick_lenght), label="Modello teorico", color="orange")
 
-plt.axvline(x=stick_lenght/2, color="orange", linestyle="--", label="Centro del pendolo")
+plt.axvline(x=stick_lenght/2, color="orange", linestyle="--", label="Centro di massa")
 plt.margins(x=0, y=0.1)
-
+plt.xlabel("Distanza del foro dall'estremo (m)")
+plt.ylabel("Periodo (s)")
+plt.title("Periodo di oscillazione in funzione della posizione del foro")
+plt.legend(loc="best")
 plt.show()
+plt.close()
 
 ### PLOT DEI RESIDUI
 
@@ -102,8 +114,12 @@ plt.fill_between(
     color="orange",
     alpha=0.1,
 )
-
+plt.xlabel("Distanza del foro dall'estremo (m)")
+plt.ylabel("Residuo: misurato − atteso (s)")
+plt.title("Residui assoluti")
+plt.legend(loc="lower right")
 plt.show()
+plt.close()
 
 ### PLOT DEI RESIDUI PERCENTUALI
 
@@ -140,8 +156,12 @@ weighted_mean = lambda x: np.average(x, weights= 1/merged_data.loc[x.index]["err
 plt.axhline(y=weighted_mean((merged_data["measured_period"] - merged_data["expected_period"]) / merged_data["expected_period"] * 100), color="green", linestyle="--", label="Residui nulli")
 plt.margins(0)
 
-
+plt.xlabel("Distanza del foro dall'estremo (m)")
+plt.ylabel("Residuo percentuale (%)")
+plt.title("Residui percentuali")
+plt.legend(loc="lower right")
 plt.show()
+plt.close()
 
 # CONFRONTO MODELLI TEORICI ALTERNATIVI (errore percentuale)
 
@@ -161,10 +181,14 @@ plt.plot(linspace, (period_model_v3(np.abs(linspace - offset), stick_lenght) - p
 plt.plot(linspace, (period_model_v4(np.abs(linspace - offset), stick_lenght) - period_model(np.abs(linspace - stick_lenght/2), stick_lenght))/period_model(np.abs(linspace - stick_lenght/2), stick_lenght) * 100, label="Modello teorico v3", color="blue")
 
 linspace = np.linspace(0.55, 1, 5000)
-plt.plot(linspace, (period_model_v2(np.abs(linspace - stick_lenght/2), stick_lenght) - period_model(np.abs(linspace - stick_lenght/2), stick_lenght))/period_model(np.abs(linspace - stick_lenght/2), stick_lenght) * 100, label="Modello teorico v1", color="orange")
-plt.plot(linspace, (period_model_v3(np.abs(linspace - offset), stick_lenght) - period_model(np.abs(linspace - stick_lenght/2), stick_lenght))/period_model(np.abs(linspace - stick_lenght/2), stick_lenght) * 100, label="Modello teorico v2", color="green")
-plt.plot(linspace, (period_model_v4(np.abs(linspace - offset), stick_lenght) - period_model(np.abs(linspace - stick_lenght/2), stick_lenght))/period_model(np.abs(linspace - stick_lenght/2), stick_lenght) * 100, label="Modello teorico v3", color="blue")
-
+plt.plot(linspace, (period_model_v2(np.abs(linspace - stick_lenght/2), stick_lenght) - period_model(np.abs(linspace - stick_lenght/2), stick_lenght))/period_model(np.abs(linspace - stick_lenght/2), stick_lenght) * 100, label="_nolegend_", color="orange")
+plt.plot(linspace, (period_model_v3(np.abs(linspace - offset), stick_lenght) - period_model(np.abs(linspace - stick_lenght/2), stick_lenght))/period_model(np.abs(linspace - stick_lenght/2), stick_lenght) * 100, label="_nolegend_", color="green")
+plt.plot(linspace, (period_model_v4(np.abs(linspace - offset), stick_lenght) - period_model(np.abs(linspace - stick_lenght/2), stick_lenght))/period_model(np.abs(linspace - stick_lenght/2), stick_lenght) * 100, label="_nolegend_", color="blue")
+plt.xlabel("Distanza del foro dall'estremo (m)")
+plt.ylabel("Residuo percentuale rispetto al base (%)")
+plt.title("Confronto tra modelli teorici")
+plt.legend(loc="best")
 plt.show()
+plt.close()
 
 print(offset - stick_lenght/2)
