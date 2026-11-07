@@ -95,7 +95,7 @@ plt.errorbar(merged_data["hole_distance"], merged_data["measured_period"] - merg
 
 concatenated = np.array([])
 linspace = np.linspace(0, 0.4, 1000)
-expected_T_error = np.sqrt(diff_T_diff_d(np.abs(linspace - stick_lenght/2), stick_lenght)**2 * stick_measurement_error**2 + diff_T_diff_l(np.abs(linspace - stick_lenght/2), stick_lenght)**2 * stick_measurement_error**2)
+expected_T_error = np.sqrt(diff_T_diff_d(np.abs(linspace - stick_lenght/2), stick_lenght)**2 * stick_measurement_error**2 + diff_T_diff_l(np.abs(linspace - stick_lenght/2), stick_lenght)**2 * (stick_measurement_error*2)**2)
 concatenated = np.concatenate([concatenated, expected_T_error])
 
 plt.plot(linspace, expected_T_error, color="orange", linestyle="--")
@@ -103,7 +103,7 @@ plt.plot(linspace, -expected_T_error, color="orange", linestyle="--")
 concatenated = np.concatenate([concatenated, np.zeros(1000) + max(expected_T_error)])
 
 linspace = np.linspace(0.6, 1, 1000)
-expected_T_error = np.sqrt(diff_T_diff_d(np.abs(linspace - stick_lenght/2), stick_lenght)**2 * stick_measurement_error**2 + diff_T_diff_l(np.abs(linspace - stick_lenght/2), stick_lenght)**2 * stick_measurement_error**2)
+expected_T_error = np.sqrt(diff_T_diff_d(np.abs(linspace - stick_lenght/2), stick_lenght)**2 * stick_measurement_error**2 + diff_T_diff_l(np.abs(linspace - stick_lenght/2), stick_lenght)**2 * (stick_measurement_error*2)**2)
 concatenated = np.concatenate([concatenated, expected_T_error])
 
 plt.plot(linspace, expected_T_error, color="orange", linestyle="--")
@@ -132,7 +132,7 @@ plt.errorbar(merged_data["hole_distance"], (merged_data["measured_period"] - mer
 concatenated = np.array([])
 
 linspace = np.linspace(0, 0.35, 1000)
-expected_T_error_percentual = np.sqrt(diff_T_diff_d(np.abs(linspace - stick_lenght/2), stick_lenght)**2 * stick_measurement_error**2 + diff_T_diff_l(np.abs(linspace - stick_lenght/2), stick_lenght)**2 * stick_measurement_error**2) / period_model(np.abs(linspace - stick_lenght/2), stick_lenght) * 100
+expected_T_error_percentual = np.sqrt(diff_T_diff_d(np.abs(linspace - stick_lenght/2), stick_lenght)**2 * stick_measurement_error**2 + diff_T_diff_l(np.abs(linspace - stick_lenght/2), stick_lenght)**2 * (stick_measurement_error*2)**2) / period_model(np.abs(linspace - stick_lenght/2), stick_lenght) * 100
 concatenated = np.concatenate([concatenated, expected_T_error_percentual])
 
 plt.plot(linspace, expected_T_error_percentual, color="orange", linestyle="--")
@@ -141,7 +141,7 @@ plt.plot(linspace, -expected_T_error_percentual, color="orange", linestyle="--")
 concatenated = np.concatenate([concatenated, np.zeros(1000) + max(expected_T_error_percentual)])
 
 linspace = np.linspace(0.65, 1, 1000)
-expected_T_error_percentual = np.sqrt(diff_T_diff_d(np.abs(linspace - stick_lenght/2), stick_lenght)**2 * stick_measurement_error**2 + diff_T_diff_l(np.abs(linspace - stick_lenght/2), stick_lenght)**2 * stick_measurement_error**2) / period_model(np.abs(linspace - stick_lenght/2), stick_lenght) * 100
+expected_T_error_percentual = np.sqrt(diff_T_diff_d(np.abs(linspace - stick_lenght/2), stick_lenght)**2 * stick_measurement_error**2 + diff_T_diff_l(np.abs(linspace - stick_lenght/2), stick_lenght)**2 * (stick_measurement_error*2)**2) / period_model(np.abs(linspace - stick_lenght/2), stick_lenght) * 100
 concatenated = np.concatenate([concatenated, expected_T_error_percentual])
 plt.plot(linspace, expected_T_error_percentual, color="orange", linestyle="--")
 plt.plot(linspace, -expected_T_error_percentual, color="orange", linestyle="--")
@@ -196,4 +196,4 @@ plt.legend(loc="best")
 plt.show()
 plt.close()
 
-print(offset - stick_lenght/2)
+print((offset - stick_lenght/2)*100)
