@@ -31,7 +31,8 @@ def diff_T_diff_l(d, l):
 ### PRENDIAMO I DATI
 data = data.div(properties["n_measurements"].to_numpy(), axis=1)
 properties["measured_period"] = data.mean(axis=0).to_numpy()
-properties["error"] = np.array(data.std(axis=0) / np.sqrt(data != np.nan).sum(axis=0).to_numpy())
+properties["error"] = np.array(data.std(axis=0) / np.sqrt(data.notna().sum(axis=0).to_numpy()))
+# properties["error"] = np.array(data.std(axis=0))
 properties["error"] = np.maximum(properties["error"], 0.01/np.sqrt(3)/properties["n_measurements"])
 # error = [max(e, 0.01) for e in error]
 
