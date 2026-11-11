@@ -160,6 +160,26 @@ merged_data["error_percentual"] = merged_data["error"] / merged_data["expected_p
 
 weighted_mean = lambda x: np.average(x, weights= 1/merged_data.loc[x.index]["error_percentual"].to_numpy()**2)
 plt.axhline(y=weighted_mean((merged_data["measured_period"] - merged_data["expected_period"]) / merged_data["expected_period"] * 100), color="green", linestyle="--", label="Scostamento percentuale medio")
+
+# 1. Calcoliamo lo scostamento percentuale per pulizia e leggibilità
+pct_deviation = (merged_data["measured_period"] - merged_data["expected_period"]) / merged_data["expected_period"] * 100
+
+# 2. Funzione di supporto per i pesi (inversamente proporzionali al quadrato dell'errore)
+def get_weights(x):
+    return 1 / merged_data.loc[x.index]["error_percentual"].to_numpy()**2
+
+# 3. Media pesata e Deviazione standard pesata
+weighted_mean = lambda x: np.average(x, weights=get_weights(x))
+weighted_std = lambda x: np.sqrt(np.average((x - weighted_mean(x))**2, weights=get_weights(x)))
+
+# 4. Applicazione ed esecuzione
+mean_val = weighted_mean(pct_deviation)
+std_val = weighted_std(pct_deviation)
+print(mean_val)
+# Plot e stampa
+plt.axhline(y=mean_val, color="green", linestyle="--", label="Scostamento percentuale medio")
+print("Deviazione standard pesata:", std_val*mean_val)
+
 plt.margins(0)
 plt.xlabel("Distanza del foro dall'estremo (m)")
 plt.ylabel(r"Residuo percentuale (\%)")
@@ -167,3 +187,17 @@ plt.title("Residui percentuali")
 plt.legend(loc="upper left")
 plt.show()
 plt.close()
+
+def T_model(x, l, x_cm):
+    d = np.abs(x - x_cm)
+    return 2*np.pi*np.sqrt((l**2/12 + d**2)/(g*d))
+
+popt, pcov = curve_fit(T_model, merged_data["hole_distance"], merged_data["measured_period"],
+                       p0=[1.0, offset], sigma=merged_data["error"], absolute_sigma=True)
+
+print(popt, pcov)
+
+l_interpolato = popt[0]
+l_errore = np.sqrt(pcov[0, 0])
+
+print(f"Valore di l interpolato: {l_interpolato:.5f} ± {l_errore:.5f}")
