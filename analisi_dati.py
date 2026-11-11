@@ -43,7 +43,7 @@ def diff_T_diff_l(d, l):
 data = data.div(properties["n_measurements"].to_numpy(), axis=1)
 properties["measured_period"] = data.mean(axis=0).to_numpy()
 properties["error"] = np.array(data.std(axis=0) / np.sqrt(data.notna().sum(axis=0).to_numpy()))
-properties["error"] = np.maximum(properties["error"], 0.01/np.sqrt(3)/properties["n_measurements"])
+properties["error"] = np.maximum(properties["error"], 0.01/np.sqrt(12)/properties["n_measurements"])
 
 weighted_mean = lambda x: np.average(x, weights= 1/properties.loc[x.index]["error"].to_numpy()**2)
 error_deduction = lambda x: np.sqrt(1/np.sum(1/x**2))
@@ -70,7 +70,6 @@ merged_data["percent_error"] = merged_data["error"] / merged_data["expected_peri
 
 ### STAMPA DEL DATAFRAME FINALE
 merged_data = merged_data.set_index("hole_id")
-print(merged_data[["measured_period", "error", "percent_error", "sigma"]].to_latex(float_format="%.3f"))
 
 ### PLOT DELLE MISURAZIONI E DEL MODELLO TEORICO
 plt.plot(merged_data["hole_distance"], merged_data["measured_period"], "o", label="Misurazioni")
@@ -162,7 +161,6 @@ merged_data["error_percentual"] = merged_data["error"] / merged_data["expected_p
 weighted_mean = lambda x: np.average(x, weights= 1/merged_data.loc[x.index]["error_percentual"].to_numpy()**2)
 plt.axhline(y=weighted_mean((merged_data["measured_period"] - merged_data["expected_period"]) / merged_data["expected_period"] * 100), color="green", linestyle="--", label="Scostamento percentuale medio")
 plt.margins(0)
-
 plt.xlabel("Distanza del foro dall'estremo (m)")
 plt.ylabel(r"Residuo percentuale (\%)")
 plt.title("Residui percentuali")
