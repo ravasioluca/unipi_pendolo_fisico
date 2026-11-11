@@ -60,6 +60,7 @@ merged_data = properties.groupby("hole_id").agg(
 ).reset_index()
 
 merged_data["error"] = np.maximum(np.sqrt(merged_data["reduced_chi2"]), 1) * merged_data["error"]
+merged_data["error"] = np.sqrt(merged_data["error"]**2 + (0.01/np.sqrt(12))**2)
 
 # merged_data["error"] = np.maximum(merged_data["error"], 0.01) -- molto controverso
 
