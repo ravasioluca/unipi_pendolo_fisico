@@ -43,9 +43,7 @@ def diff_T_diff_l(d, l):
 data = data.div(properties["n_measurements"].to_numpy(), axis=1)
 properties["measured_period"] = data.mean(axis=0).to_numpy()
 properties["error"] = np.array(data.std(axis=0) / np.sqrt(data.notna().sum(axis=0).to_numpy()))
-# properties["error"] = np.array(data.std(axis=0))
 properties["error"] = np.maximum(properties["error"], 0.01/np.sqrt(3)/properties["n_measurements"])
-# error = [max(e, 0.01) for e in error]
 
 weighted_mean = lambda x: np.average(x, weights= 1/properties.loc[x.index]["error"].to_numpy()**2)
 error_deduction = lambda x: np.sqrt(1/np.sum(1/x**2))
