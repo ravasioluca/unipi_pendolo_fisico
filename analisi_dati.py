@@ -62,14 +62,14 @@ merged_data = properties.groupby("hole_id").agg(
 merged_data["error"] = np.maximum(np.sqrt(merged_data["reduced_chi2"]), 1) * merged_data["error"]
 merged_data["error"] = np.sqrt(merged_data["error"]**2 + (0.01/np.sqrt(12))**2)
 
-# merged_data["error"] = np.maximum(merged_data["error"], 0.01) -- molto controverso
-
 merged_data["d"] = np.absolute(merged_data["hole_distance"].to_numpy() - stick_lenght/2)
 merged_data["expected_period"] = period_model(merged_data["d"].to_numpy(), stick_lenght)
 merged_data["sigma"] = np.abs(merged_data["expected_period"] - merged_data["measured_period"]) / merged_data["error"]
+merged_data["percent_error"] = merged_data["error"] / merged_data["expected_period"] * 100
 
 ### STAMPA DEL DATAFRAME FINALE
-print(merged_data)
+merged_data = merged_data.set_index("hole_id")
+print(merged_data[["measured_period", "error", "percent_error", "sigma"]].to_latex(float_format="%.3f"))
 
 ### PLOT DELLE MISURAZIONI E DEL MODELLO TEORICO
 plt.plot(merged_data["hole_distance"], merged_data["measured_period"], "o", label="Misurazioni")
