@@ -60,7 +60,10 @@ merged_data = properties.groupby("hole_id").agg(
 merged_data["error"] = np.maximum(np.sqrt(merged_data["reduced_chi2"]), 1) * merged_data["error"]
 merged_data["error"] = np.sqrt(merged_data["error"]**2 + (0.01/np.sqrt(12))**2)
 
-merged_data["d"] = np.absolute(merged_data["hole_distance"].to_numpy() - stick_lenght/2)
+offset = (stick_lenght * stick_width * stick_lenght /2 - np.pi * (hole_diameter/2)**2 * sum(properties["hole_distance"].unique()))/(stick_lenght * stick_width - np.pi * (hole_diameter/2)**2 * len(properties["hole_distance"].unique()))
+
+
+merged_data["d"] = np.absolute(merged_data["hole_distance"].to_numpy() - offset)
 merged_data["expected_period"] = period_model(merged_data["d"].to_numpy(), stick_lenght)
 merged_data["sigma"] = np.abs(merged_data["expected_period"] - merged_data["measured_period"]) / merged_data["error"]
 merged_data["percent_error"] = merged_data["error"] / merged_data["expected_period"] * 100
@@ -73,13 +76,13 @@ print(merged_data[["measured_period", "error", "percent_error", "sigma"]].to_lat
 plt.plot(merged_data["hole_distance"], merged_data["measured_period"], "o", label="Misurazioni")
 
 spazio_lineare = np.linspace(0, 0.485, 1000)
-plt.plot(spazio_lineare, period_model(np.abs(spazio_lineare - stick_lenght/2), stick_lenght), label="_nolegend_", color="orange")
+plt.plot(spazio_lineare, period_model(np.abs(spazio_lineare - offset), stick_lenght), label="_nolegend_", color="orange")
 
 
 spazio_lineare = np.linspace(0.515, 1, 1000)
-plt.plot(spazio_lineare, period_model(np.abs(spazio_lineare - stick_lenght/2), stick_lenght), label="Modello teorico", color="orange")
+plt.plot(spazio_lineare, period_model(np.abs(spazio_lineare - offset), stick_lenght), label="Modello teorico", color="orange")
 
-plt.axvline(x=stick_lenght/2, color="orange", linestyle="--", label="Centro di massa")
+plt.axvline(x=offset, color="orange", linestyle="--", label="Centro di massa")
 plt.margins(x=0, y=0.1)
 plt.xlabel("Distanza del foro dall'estremo (m)")
 plt.ylabel("Periodo (s)")
@@ -94,7 +97,7 @@ plt.errorbar(merged_data["hole_distance"], merged_data["measured_period"] - merg
 
 concatenated = np.array([])
 linspace = np.linspace(0, 0.48, 1000)
-expected_T_error = np.sqrt(diff_T_diff_d(np.abs(linspace - stick_lenght/2), stick_lenght)**2 * stick_measurement_error**2 + diff_T_diff_l(np.abs(linspace - stick_lenght/2), stick_lenght)**2 * (stick_measurement_error*2)**2)
+expected_T_error = np.sqrt(diff_T_diff_d(np.abs(linspace - offset), stick_lenght)**2 * stick_measurement_error**2 + diff_T_diff_l(np.abs(linspace - offset), stick_lenght)**2 * (stick_measurement_error*2)**2)
 concatenated = np.concatenate([concatenated, expected_T_error])
 
 plt.plot(linspace, expected_T_error, color="orange", linestyle="--")
@@ -102,7 +105,7 @@ plt.plot(linspace, -expected_T_error, color="orange", linestyle="--")
 concatenated = np.concatenate([concatenated, np.zeros(1000) + max(expected_T_error)])
 
 linspace = np.linspace(0.52, 1, 1000)
-expected_T_error = np.sqrt(diff_T_diff_d(np.abs(linspace - stick_lenght/2), stick_lenght)**2 * stick_measurement_error**2 + diff_T_diff_l(np.abs(linspace - stick_lenght/2), stick_lenght)**2 * (stick_measurement_error*2)**2)
+expected_T_error = np.sqrt(diff_T_diff_d(np.abs(linspace - offset), stick_lenght)**2 * stick_measurement_error**2 + diff_T_diff_l(np.abs(linspace - offset), stick_lenght)**2 * (stick_measurement_error*2)**2)
 concatenated = np.concatenate([concatenated, expected_T_error])
 
 plt.plot(linspace, expected_T_error, color="orange", linestyle="--")
@@ -131,7 +134,7 @@ plt.errorbar(merged_data["hole_distance"], (merged_data["measured_period"] - mer
 concatenated = np.array([])
 
 linspace = np.linspace(0, 0.48, 1000)
-expected_T_error_percentual = np.sqrt(diff_T_diff_d(np.abs(linspace - stick_lenght/2), stick_lenght)**2 * stick_measurement_error**2 + diff_T_diff_l(np.abs(linspace - stick_lenght/2), stick_lenght)**2 * (stick_measurement_error*2)**2) / period_model(np.abs(linspace - stick_lenght/2), stick_lenght) * 100
+expected_T_error_percentual = np.sqrt(diff_T_diff_d(np.abs(linspace - offset), stick_lenght)**2 * stick_measurement_error**2 + diff_T_diff_l(np.abs(linspace - offset), stick_lenght)**2 * (stick_measurement_error*2)**2) / period_model(np.abs(linspace - offset), stick_lenght) * 100
 concatenated = np.concatenate([concatenated, expected_T_error_percentual])
 
 plt.plot(linspace, expected_T_error_percentual, color="orange", linestyle="--")
@@ -140,7 +143,7 @@ plt.plot(linspace, -expected_T_error_percentual, color="orange", linestyle="--")
 concatenated = np.concatenate([concatenated, np.zeros(1000) + max(expected_T_error_percentual)])
 
 linspace = np.linspace(0.52, 1, 1000)
-expected_T_error_percentual = np.sqrt(diff_T_diff_d(np.abs(linspace - stick_lenght/2), stick_lenght)**2 * stick_measurement_error**2 + diff_T_diff_l(np.abs(linspace - stick_lenght/2), stick_lenght)**2 * (stick_measurement_error*2)**2) / period_model(np.abs(linspace - stick_lenght/2), stick_lenght) * 100
+expected_T_error_percentual = np.sqrt(diff_T_diff_d(np.abs(linspace - offset), stick_lenght)**2 * stick_measurement_error**2 + diff_T_diff_l(np.abs(linspace - offset), stick_lenght)**2 * (stick_measurement_error*2)**2) / period_model(np.abs(linspace - offset), stick_lenght) * 100
 concatenated = np.concatenate([concatenated, expected_T_error_percentual])
 plt.plot(linspace, expected_T_error_percentual, color="orange", linestyle="--")
 plt.plot(linspace, -expected_T_error_percentual, color="orange", linestyle="--")
@@ -166,33 +169,3 @@ plt.title("Residui percentuali")
 plt.legend(loc="upper left")
 plt.show()
 plt.close()
-
-# CONFRONTO MODELLI TEORICI ALTERNATIVI (errore percentuale)
-
-def period_model_v2(d, l):
-    return 2.0 * np.pi * np.sqrt(((l**2.0 + stick_width**2.0) / 12.0 + d**2.0) / (g * d))
-
-offset = (stick_lenght * stick_width * stick_lenght /2 - 4 * np.pi * (hole_diameter/2)**2 * sum(properties["hole_distance"].unique()))/(stick_lenght * stick_width - 4 * np.pi * (hole_diameter/2)**2 * len(properties["hole_distance"].unique()))
-def period_model_v3(d, l):
-    return 2.0 * np.pi * np.sqrt((l**2.0 / 12.0 + (d)**2.0) / (g * d))
-
-def period_model_v4(d, l):
-    return (2.0 * np.pi * np.sqrt((l**2.0 / 12.0 + (d)**2.0) / (g * d)))*(1 + 1/16 * 0.03)
-
-linspace = np.linspace(0, 0.45, 5000)
-plt.plot(linspace, (period_model_v2(np.abs(linspace - stick_lenght/2), stick_lenght) - period_model(np.abs(linspace - stick_lenght/2), stick_lenght))/period_model(np.abs(linspace - stick_lenght/2), stick_lenght) * 100, label="Modello teorico v1", color="orange")
-plt.plot(linspace, (period_model_v3(np.abs(linspace - offset), stick_lenght) - period_model(np.abs(linspace - stick_lenght/2), stick_lenght))/period_model(np.abs(linspace - stick_lenght/2), stick_lenght) * 100, label="Modello teorico v2", color="green")
-plt.plot(linspace, (period_model_v4(np.abs(linspace - offset), stick_lenght) - period_model(np.abs(linspace - stick_lenght/2), stick_lenght))/period_model(np.abs(linspace - stick_lenght/2), stick_lenght) * 100, label="Modello teorico v3", color="blue")
-
-linspace = np.linspace(0.55, 1, 5000)
-plt.plot(linspace, (period_model_v2(np.abs(linspace - stick_lenght/2), stick_lenght) - period_model(np.abs(linspace - stick_lenght/2), stick_lenght))/period_model(np.abs(linspace - stick_lenght/2), stick_lenght) * 100, label="_nolegend_", color="orange")
-plt.plot(linspace, (period_model_v3(np.abs(linspace - offset), stick_lenght) - period_model(np.abs(linspace - stick_lenght/2), stick_lenght))/period_model(np.abs(linspace - stick_lenght/2), stick_lenght) * 100, label="_nolegend_", color="green")
-plt.plot(linspace, (period_model_v4(np.abs(linspace - offset), stick_lenght) - period_model(np.abs(linspace - stick_lenght/2), stick_lenght))/period_model(np.abs(linspace - stick_lenght/2), stick_lenght) * 100, label="_nolegend_", color="blue")
-plt.xlabel("Distanza del foro dall'estremo (m)")
-plt.ylabel(r"Residuo percentuale rispetto al base (\%)")
-plt.title("Confronto tra modelli teorici")
-plt.legend(loc="best")
-plt.show()
-plt.close()
-
-print((offset - stick_lenght/2)*100)
