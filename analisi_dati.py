@@ -27,7 +27,7 @@ properties = pd.read_csv("allegati/properties.csv")
 stick_lenght = 1.00 # meters
 stick_width = 0.0152 # meters 
 hole_diameter = 0.0052 # meters
-stick_measurement_error = 0.005 # meters
+stick_measurement_error = 0.0005 # meters
 g = 9.8052 # Recuperato da bgi.obs-mip.fr - Bureau Gravimétrique International
 
 def period_model(d, l):
